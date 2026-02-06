@@ -1,3 +1,6 @@
+'use client';
+export const dynamic = 'force-dynamic';
+
 import {fetchAllNominations} from "@/shared/api/nominations.api";
 import Link from "next/link";
 

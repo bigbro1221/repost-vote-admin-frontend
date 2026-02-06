@@ -1,5 +1,6 @@
-'use client'
+'use client';
 
+export const dynamic = 'force-dynamic';
 import {fetchCandidatesNames} from "@/shared/api/candidates.api";
 import CandidateItem from "@/features/candidate/ui/candidate-item";
 import useSWR from 'swr';

@@ -1,6 +1,7 @@
 import './globals.css'
 import Header from "../widgets/layout/ui/Header";
 import SignInController from '@/features/sign-in/controllers/sign-in-controller';
+import InitApi from './InitApi';
 
 export const metadata = {
     title: 'Repost Vote Admin',
@@ -13,6 +14,7 @@ export default function RootLayout({children}) {
             <body>
                 <Header/>
                 <SignInController />
+                <InitApi />
                 <div className={'flex flex-col justify-center max-w-6xl mx-auto'}>
                     {children}
                 </div>

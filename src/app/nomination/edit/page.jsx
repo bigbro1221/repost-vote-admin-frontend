@@ -1,3 +1,6 @@
+'use client';
+export const dynamic = 'force-dynamic';
+
 import NominationsEdit from "../../../widgets/nomination/ui/nominations-edit";
 
 const EditNominations = async () => {
