@@ -25,7 +25,9 @@ export const attachAuthInterceptors = (useAuthStore) => {
       return response;
     },
     error => {
-      if (error?.response?.status === 401) {
+      // a 401 from the sign-in request itself means "wrong credentials", not "session expired"
+      const isSignIn = /admin\/sign-(in|out)/.test(String(error?.config?.url ?? ''));
+      if (error?.response?.status === 401 && !isSignIn) {
         useAuthStore.getState().signOut();
       }
       return Promise.reject(error);

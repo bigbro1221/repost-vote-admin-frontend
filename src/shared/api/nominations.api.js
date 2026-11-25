@@ -1,53 +1,11 @@
 import {api} from './axios'
+import {getYear} from '../store/edition.store'
 
-export const fetchAllNominations = async () => {
-    try {
-        const response = await api.get('nomination')
-        return response.data
-    } catch (e) {
-        console.log(e)
-        return []
-    }
-
-}
-
-export const updateNomination = async (data) => {
-    try {
-
-        const response = await api.put(`nomination/${data._id}`, data)
-        return response.data
-    } catch (e) {
-        console.log(e)
-        return []
-    }
-
-}
-export const createNomination = async data => {
-    try {
-        const response = await api.post('nomination', data)
-        return response.data
-    } catch (e) {
-        console.log(e)
-        return []
-    }
-
-}
-export const deleteNomination = async id => {
-    try {
-        const response = await api.delete(`nomination/${id}`)
-        return response.data
-    } catch (e) {
-        console.log(e)
-        return []
-    }
-}
-export const updateNominationOrder = async (data) => {
-    try {
-        const response = await api.post('nomination/updateOrder', data)
-        return response.data
-    } catch (e) {
-        console.log(e)
-    }
-}
-
-
+// All helpers throw on error — callers surface it (toast / SWR error state).
+export const fetchAllNominations = async (year = getYear()) => (await api.get('nomination', {params: {year}})).data
+export const fetchNominationsFull = async (year = getYear()) => (await api.get('nomination/full', {params: {year}})).data
+export const updateNomination = async (data) => (await api.put(`nomination/${data._id}`, data)).data
+export const createNomination = async data => (await api.post('nomination', {year: getYear(), ...data})).data
+export const deleteNomination = async id => (await api.delete(`nomination/${id}`)).data
+// {ids:[...]} full new order (preferred) or legacy {id, sourceOrder, destinationOrder}
+export const updateNominationOrder = async (data) => (await api.post('nomination/updateOrder', {year: getYear(), ...data})).data

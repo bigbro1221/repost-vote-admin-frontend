@@ -7,14 +7,17 @@
     "build": "next build",
     "start": "next start -p 8080",
     "lint": "next lint",
-    "build:prod": "bash docker.sh"
+    "build:prod": "bash docker.sh",
+    "test": "node --test tests/"
   },
   "dependencies": {
     "autoprefixer": "10.4.16",
     "axios": "1.6.0",
     "classnames": "2.5.1",
+    "date-fns": "2.30.0",
     "eslint": "8.53.0",
     "eslint-config-next": "14.0.1",
+    "lucide-react": "0.460.0",
     "next": "14.0.1",
     "postcss": "8.4.31",
     "react": "18.2.0",

@@ -1,13 +1,2 @@
-'use client';
-export const dynamic = 'force-dynamic';
-
-import NominationForm from "@/features/nomination/ui/nomination-form";
-
-
-const NewNomination = () => {
-    return (
-        <NominationForm/>
-    );
-};
-
-export default NewNomination;
+import {redirect} from 'next/navigation';
+export default function Page() { redirect('/?newNomination=1'); }

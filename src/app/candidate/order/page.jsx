@@ -1,11 +1,3 @@
-'use client';
-export const dynamic = 'force-dynamic';
-import NominationsDnd from "@/widgets/vote/ui/NominationsDND";
-
-const NominationsOrder = () => {
-    return (
-        <NominationsDnd/>
-    );
-};
-
-export default NominationsOrder;
+import {redirect} from 'next/navigation';
+// legacy route → everything lives in the nominations workspace now
+export default function Page() { redirect('/'); }

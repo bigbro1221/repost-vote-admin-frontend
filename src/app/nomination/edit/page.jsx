@@ -1,16 +1,3 @@
-'use client';
-export const dynamic = 'force-dynamic';
-
-import NominationsEdit from "../../../widgets/nomination/ui/nominations-edit";
-
-const EditNominations = async () => {
-    return (
-        <>
-            <h2 className={'font-bold text-lg mt-8 ml-2'}>Список номинаций</h2>
-
-            <NominationsEdit/>
-        </>
-    );
-};
-
-export default EditNominations;
+import {redirect} from 'next/navigation';
+// legacy route → everything lives in the nominations workspace now
+export default function Page() { redirect('/'); }

@@ -1,72 +1,12 @@
 import {api} from './axios'
+import {getYear} from '../store/edition.store'
 
-export const fetchAllCandidates = async () => {
-    try {
-        const response = await api.get('candidate')
-        return response.data
-    } catch (e) {
-        console.log(e)
-        return []
-    }
-
-}
-export const fetchCandidatesNames = async id => {
-    try {
-        const response = await api.get(`/candidate/nomination/${id}/names`)
-        return response.data
-    } catch (e) {
-        console.log(e)
-        return []
-    }
-
-}
-export const fetchOneCandidate = async id => {
-    try {
-        const response = await api.get(`/candidate/rating/${id}`)
-        return response.data
-    } catch (e) {
-        console.log(e)
-        return []
-    }
-
-}
-export const updateCandidate = async (id, data) => {
-    try {
-
-        const response = await api.put(`candidate/${id}`, data)
-        return response.data
-    } catch (e) {
-        console.log(e)
-        return []
-    }
-
-}
-export const createCandidate = async data => {
-    try {
-        const response = await api.post('candidate', data)
-        return response.data
-    } catch (e) {
-        console.log(e)
-        return []
-    }
-
-}
-export const deleteCandidate = async id => {
-    try {
-        const response = await api.delete(`candidate/${id}`)
-        return response.data
-    } catch (e) {
-        console.log(e)
-        return []
-    }
-}
-export const updateCandidateOrder = async (data) => {
-    try {
-        const response = await api.post('candidate/updateOrder', data)
-        return response.data
-    } catch (e) {
-        console.log(e)
-    }
-}
-
-
+// All helpers throw on error — callers surface it (toast / SWR error state).
+export const fetchAllCandidates = async (year = getYear()) => (await api.get('candidate', {params: {year}})).data
+export const fetchCandidatesNames = async (id, year = getYear()) => (await api.get(`/candidate/nomination/${id}/names`, {params: {year}})).data
+export const fetchOneCandidate = async (id, year = getYear()) => (await api.get(`/candidate/rating/${id}`, {params: {year}})).data
+export const updateCandidate = async (id, data) => (await api.put(`candidate/${id}`, data)).data
+export const createCandidate = async data => (await api.post('candidate', data)).data
+export const deleteCandidate = async id => (await api.delete(`candidate/${id}`)).data
+// {nomination, ids:[...]} full new order (preferred) or legacy {id, destinationIndex}
+export const updateCandidateOrder = async (data) => (await api.post('candidate/updateOrder', {year: getYear(), ...data})).data

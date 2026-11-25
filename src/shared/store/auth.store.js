@@ -21,7 +21,7 @@ const createState = (set) => {
     signOut: async () => {
       set({ isAuth: false });
       deleteAuthToken();
-      signOut();
+      signOut().catch(() => {});
     }
   };
 };

@@ -1,24 +1,15 @@
 'use client'
-
 import classNames from "classnames"
+import {FieldError, Input, Label} from './Field'
 
-const defaultClassName = "bg-gray-100 border border-primary-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 focus:border-2 block w-full p-2.5"
-
-const TextField = ({label, className, error, inputProps, wrapperClassName}) => {
-    return (
-        <div
-            className={classNames(
-                wrapperClassName,
-                'w-full min-w-[320px]'
-            )}
-        >
-            {label && <label htmlFor="brand"
-                    className="block mb-2 text-sm font-medium text-gray-900">{label}</label>}
-            <input {...inputProps} className={className ? defaultClassName + className : defaultClassName}
-                   placeholder="Введите значение..."/>
-            {error && <span className={'text-rose-600 text-sm italic underline'}>{error.message}</span>}
-        </div>
-    )
-}
+// Back-compat wrapper (label + input + error) used by older forms.
+const TextField = ({label, className, error, inputProps, wrapperClassName, type, placeholder, hint}) => (
+    <div className={classNames(wrapperClassName, 'w-full')}>
+        {label && <Label hint={hint}>{label}</Label>}
+        <Input {...inputProps} type={type ?? inputProps?.type} className={className} invalid={!!error}
+               placeholder={placeholder && placeholder !== '...' ? placeholder : 'Введите значение…'}/>
+        <FieldError error={error}/>
+    </div>
+)
 
 export default TextField

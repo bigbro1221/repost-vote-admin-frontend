@@ -1,81 +1,62 @@
 'use client'
-import TextField from '@/shared/ui/TextField'
 import {useForm} from "react-hook-form";
-import {createNomination, deleteNomination, updateNomination} from "@/shared/api/nominations.api";
-import {useSWRConfig} from "swr";
-import Link from "next/link";
-import { useRouter } from 'next/navigation';
-import { routeNames } from '@/shared/config/route-names';
+import {Trophy} from "lucide-react";
+import {createNomination, updateNomination} from "@/shared/api/nominations.api";
+import {FieldError, Input, Label} from "@/shared/ui/Field";
+import Modal from "@/shared/ui/Modal";
+import Button from "@/shared/ui/Button";
+import {toast} from "@/shared/ui/toast";
 
-const required = 'обязательное поле'
-const NominationForm = ({type = 'create', nomination, onDelete}) => {
-    const router = useRouter()
-    const {mutate} = useSWRConfig()
-    const {register, formState: {errors}, handleSubmit} = useForm({defaultValues: nomination ?? {}})
+const required = 'Обязательное поле'
 
+const Fields = ({register, errors}) => (
+    <div className="grid gap-4">
+        <div>
+            <Label htmlFor="nom-ru">Название на русском</Label>
+            <Input id="nom-ru" data-autofocus invalid={!!errors?.ru?.name} placeholder="Самый активный хоким района" {...register('ru.name', {required})}/>
+            <FieldError error={errors?.ru?.name}/>
+        </div>
+        <div>
+            <Label htmlFor="nom-uz">Название на узбекском</Label>
+            <Input id="nom-uz" invalid={!!errors?.uz?.name} placeholder="Eng faol tuman hokimi" {...register('uz.name', {required})}/>
+            <FieldError error={errors?.uz?.name}/>
+        </div>
+    </div>
+)
+
+// Create/edit nomination in a modal. onSaved(result) after success.
+export const NominationDialog = ({open, nomination, onClose, onSaved}) => {
+    const type = nomination?._id ? 'update' : 'create'
+    const {register, formState: {errors, isSubmitting}, handleSubmit} = useForm({
+        values: {ru: {name: nomination?.ru?.name ?? ''}, uz: {name: nomination?.uz?.name ?? ''}},
+    })
     const onSubmit = async data => {
-        let result
-        if (type === 'create') {
-            result = await createNomination(data)
-        }
-        if (type === 'update') {
-            result = await updateNomination(data)
-        }
-        await mutate('nominations')
-        
-        if (result?._id) {
-            router.push(routeNames.nominations.list)
-        }
-    }
-    const remove = async () => {
-        const [_, response] = await Promise.all([
-            mutate('nominations'),
-            deleteNomination(nomination._id)
-        ])
-
-        if (response._id) {
-            onDelete?.(response._id);
+        try {
+            const result = type === 'create'
+                ? await createNomination(data)
+                : await updateNomination({...data, _id: nomination._id})
+            toast.success(type === 'create' ? 'Номинация создана' : 'Номинация обновлена', data.ru.name)
+            await onSaved?.(result)
+            onClose()
+        } catch (e) {
+            toast.fromError(e, 'Не удалось сохранить номинацию')
         }
     }
     return (
-        <>
-            {type === 'create' && <h1 className={'font-bold text-lg text-center my-4'}>Создать номинацию</h1>}
-            <form onSubmit={handleSubmit(onSubmit)} action="voteadmin/src/features/vote/ui#">
-                <TextField inputProps={{...register('ru.name', {required})}} error={errors?.ru?.name}
-                           label='Название на русском'
-                           type='text' placeholder='...'/>
-                <TextField inputProps={{...register('uz.name', {required})}} error={errors?.uz?.name}
-                           label='Название на узбекском'
-                           type='text' placeholder='...'/>
-
-                <div className={'flex items-center gap-4'}>
-                    <button type="submit"
-                            className="inline-flex items-center px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">
-                        {{
-                            create: 'Добавить', update: "Изменить"
-                        }[type]}
-                    </button>
-                    {
-                        type === 'update' &&
-                        <div className={'flex justify-between w-full'}>
-                            <button onClick={remove} type={'button'}
-                                    className="inline-flex items-center px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white bg-red-700 rounded-lg focus:ring-4 focus:ring-red-200 dark:focus:ring-red-900 hover:bg-red-800">
-                                Удалить
-                            </button>
-
-                            <Link
-                                className={'inline-flex items-center px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800'}
-                                href={`/candidate/list/${nomination._id}`}>Кандидаты</Link>
-                        </div>
-
-                    }
-                </div>
-
-
+        <Modal open={open} onClose={onClose} icon={Trophy}
+               title={type === 'create' ? 'Новая номинация' : 'Редактировать номинацию'}
+               description={type === 'create' ? 'Номинация появится в конце списка.' : undefined}
+               footer={<>
+                   <Button variant="secondary" onClick={onClose}>Отмена</Button>
+                   <Button type="submit" form="nomination-form" variant="primary" loading={isSubmitting}>
+                       {type === 'create' ? 'Создать' : 'Сохранить'}
+                   </Button>
+               </>}>
+            <form id="nomination-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+                <Fields register={register} errors={errors}/>
             </form>
-        </>
-
+        </Modal>
     )
 }
 
-export default NominationForm;
+export default NominationDialog;

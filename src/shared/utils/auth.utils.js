@@ -1,7 +1,7 @@
 import Cookies from 'universal-cookie';
 
 const cookies = new Cookies(null, { path: '/' });
-const authTokenKey = 'auth-token';
+const authTokenKey = process.env.NEXT_PUBLIC_AUTH_COOKIE || 'auth-token';
 
 export const getAuthToken = () => cookies.get(authTokenKey);
 
